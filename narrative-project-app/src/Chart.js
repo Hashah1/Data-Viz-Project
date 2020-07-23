@@ -5,12 +5,12 @@ class Chart extends Component {
         console.log("here")
         this.ref = createRef()
         
-        // const data = await d3.csv('https://raw.githubusercontent.com/Hashah1/data-viz-project/master/narrative-project-app/src/total-affected-natural-disasters.csv')
-        const data = await d3.csv('https://flunky.github.io/cars2017.csv')
-        data.forEach(d=>{
+        const urbanData = await d3.csv('https://raw.githubusercontent.com/Hashah1/data-viz-project/master/narrative-project-app/src/PercentageAccessToElectricity_urban.csv')
+        const ruralData = await d3.csv('https://raw.githubusercontent.com/Hashah1/data-viz-project/master/narrative-project-app/src/PercentageAccessToElectricity_rural.csv')
+        urbanData.forEach(d=>{
             console.log(d)
         })
-        this.drawBarChart(data)
+        // this.drawBarChart(data)
     }
     drawBarChart(data)  {
         // Get data from CSV File.
@@ -21,6 +21,10 @@ class Chart extends Component {
         .attr("width", w)
         .attr("height", h)
         .style("margin-left", 500)
+        .style("margin-right", 500)
+        .style("margin-top", 50)
+        .style("margin-bottom", 50)
+        
         .style("border", "1px solid black")
                         
         
