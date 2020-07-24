@@ -15,7 +15,7 @@ async function init() {
     console.log("here", data)
     // const urbanData = await d3.csv()
     const ruralData = await d3.csv('https://github.com/Hashah1/data-viz-project/blob/master/PercentageAccessRural.csv')
-    console.log(urbanData)
+    // console.log(urbanData)
     console.log(ruralData)
 }
 // Create Bars
