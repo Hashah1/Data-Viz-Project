@@ -14,15 +14,13 @@ class BarChartData {
 }
 
 const obj = new BarChartData()
-
+d3.select('body').text
 // Extract Data
 async function init() {
     console.log("In init()")
     const urbanURL = "https://raw.githubusercontent.com/Hashah1/data-viz-project/master/PercentageAccessUrban.csv"
     // Grab Data from the URLs
     const urbanData = await d3.csv(urbanURL) 
-    console.log("Default chart uses urban data from 2018")
-    console.log("Urban: ", urbanData)
     obj.data = urbanData
     createBarChart(obj.data)
     
@@ -35,16 +33,18 @@ function createBarChart(data, year) {
     const width = 1200 - 2 * margin;
     const height = 800 - 2 * margin;
     
+
     const svg = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", height)
     .attr("class", 'svg')
-    // text label for the x and y axis
+    // Text label for the x and y axis
     svg.append("text")             
     .attr("class", "x label")
     .attr("text-anchor", "middle")
     .attr("x", 200)
     .attr("y", height - margin)
+    .style("font-size",20)
     .text("Geographical Locations")
 
     svg.append("text")
@@ -54,6 +54,7 @@ function createBarChart(data, year) {
     .attr("x", -400)
     .attr("dy", ".20em")
     .attr("transform", "rotate(-90)")
+    .style("font-size",20 )
     .text("Percentage of access to electricity");
     
     // Create Chart
@@ -74,7 +75,7 @@ function createBarChart(data, year) {
 
     // Create X Scale
     const xScale = d3.scaleBand()
-    .range([0, width])
+    .range([0, width - margin])
     .domain(valsForBar.map((d) => d[0]))
     .padding(0.2)
     
@@ -128,12 +129,25 @@ function createBarChart(data, year) {
         .data(valsForBar)
         .enter()
         .append('rect')
-        .transition()
+        // .transition()
         .attr('x', function(d) {return xScale(d[0])})
         .attr('y', function(d) {return yScale(d[1])})
         .attr('height',function(d) {return 500 - yScale(d[1])})
         .attr('width', xScale.bandwidth())
         .attr("fill", "orange")
+        .on("mouseover", function () {
+            tooltip.style("display", null)
+        })
+        .on("mouseout", function(){
+            tooltip.style("display", "none")
+         })
+        .on("mousemove", function(d) {
+            var xPos = d3.mouse(this)[0] - 100
+            var yPos = yScale(d[1])
+            tooltip.attr("transform", "translate(" + xPos + ", " + yPos + ")")
+            var tooltipDisplay = "Access to Electricity: " + d[1] + "%"
+            tooltip.select("text").text(tooltipDisplay)
+        })
         // Change Text
         d3.select("#toggleButton").text("Get Urban")
     }
@@ -156,6 +170,11 @@ async function toggleMode() {
 
 async function handleYear() {
     console.log("Handling year.")
+    // console.log("TEs", document.getElementById("quantity").value === )
+    if (document.getElementById("quantity").value === "") {
+        console.log("empty year entered.", parseInt(document.getElementById("quantity").value))
+        return
+    }
     obj.year = document.getElementById("quantity").value
     if ( parseInt(obj.year) < 1990 || parseInt(obj.year) > 2018) {
         console.log("inValid data")

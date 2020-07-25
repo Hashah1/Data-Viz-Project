@@ -8,6 +8,7 @@
 .body {
     background: #41b3a3
 }
+
 .svg {
     background: beige;
     margin-left: auto;
@@ -27,12 +28,3 @@
     top: 150px;
     right: 10px;
   }
-
-  /* .tooltip {
-    opacity: 0;
-    position: absolute;
-    text-align: center;
-    width: 60px; height: 40px;
-    background: white;
-    border: 0px;
-} */
