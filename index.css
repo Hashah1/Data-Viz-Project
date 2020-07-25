@@ -8,9 +8,31 @@
 .body {
     background: #41b3a3
 }
-.chart {
+.svg {
     background: beige;
     margin-left: auto;
     margin-right: auto;
     display: block;
+    border: black;
 }
+
+.button-pos {
+    position: absolute;
+    top: 130px;
+    right: 10px;
+  }
+
+.dropdown-pos {
+    position: absolute;
+    top: 150px;
+    right: 10px;
+  }
+
+  /* .tooltip {
+    opacity: 0;
+    position: absolute;
+    text-align: center;
+    width: 60px; height: 40px;
+    background: white;
+    border: 0px;
+} */

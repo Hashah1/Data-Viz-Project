@@ -1,18 +1,26 @@
 <!DOCTYPE html>
 <html>
+<script src="https://d3js.org/d3.v5.min.js"></script>
 <head>
-
-<title>Page Title</title>
-<link rel="stylesheet" href="index.css">
-
+    <title>Data Viz</title>
+    <link rel="stylesheet" href="index.css">
 </head>
 
 <body class="body" onload="init()">
     <div class="header">
         <h1>% Access to electricity in Urban and Rural Areas</h1>
     </div>
-    <svg class="chart"></svg>
-    <script src="https://d3js.org/d3.v4.min.js"></script>
+
     <script src="index.js"> </script>
+    
+    <div class = "button-pos">
+        <label for="quantity">Click to Toggle between Rural/Urban data:</label>
+        <button id="toggleButton" onclick="toggleMode()">Switch</button>
+    </div>
+    <div class = "dropdown-pos">
+            <label for="quantity">Enter Years (between 1990 and 2018):</label>
+                <input type="number" id="quantity" name="quantity" min="1990" max="2018" width="10px">
+            <input type="submit" onclick="handleYear()">
+    </div>
 </body>
 </html>
