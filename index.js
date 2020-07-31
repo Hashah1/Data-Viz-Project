@@ -2,14 +2,12 @@ class BarChartData {
     constructor() {
         this.urbanMode = true
         this.year = '2018'
-        this.data = []
+        this.urbanData = []
+        this.ruralData = []
     }
 
     toggleMode() {
         this.urbanMode = !this.urbanMode
-    }
-    getMode(){
-        return this.urbanMode
     }
 }
 
@@ -21,9 +19,14 @@ async function init() {
     const urbanURL = "https://raw.githubusercontent.com/Hashah1/data-viz-project/master/PercentageAccessUrban.csv"
     // Grab Data from the URLs
     const urbanData = await d3.csv(urbanURL) 
-    obj.data = urbanData
-    createBarChart(obj.data)
-    
+
+    const ruralURL = "https://raw.githubusercontent.com/Hashah1/data-viz-project/master/PercentageAccessRural.csv"
+    // Grab Data from the URLs
+    const ruralData = await d3.csv(ruralURL) 
+    // obj.data = urbanData
+    obj.urbanData = urbanData
+    obj.ruralData = ruralData
+    createBarChart(obj.urbanData)
 }
 
 function createBarChart(data, year) {
@@ -33,11 +36,11 @@ function createBarChart(data, year) {
     const width = 1200 - 2 * margin;
     const height = 800 - 2 * margin;
     
-
     const svg = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", height)
     .attr("class", 'svg')
+
     // Text label for the x and y axis
     svg.append("text")             
     .attr("class", "x label")
@@ -68,10 +71,19 @@ function createBarChart(data, year) {
     // Create Y Scale
     const yScale = d3.scaleLinear()
     .range([500, 0])
-    .domain([0, 100]); // 0 - 100 since dealing with %ages.
-
+    .domain([0, 100]) // 0 - 100 since dealing with %ages.
+    
+    // Intervals for tick values
+    var yDom = [0, 5, 10, 15, 20, 25, 30, 35, 40,
+        45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100
+        
+    ]
     chart.append('g')
-    .call(d3.axisLeft(yScale));
+    .call(
+        d3.axisLeft(yScale)
+        .tickValues(yDom)
+    )
+    
 
     // Create X Scale
     const xScale = d3.scaleBand()
@@ -93,10 +105,10 @@ function createBarChart(data, year) {
     .attr("dy", "1.3em")
     .style("font-weight", "bold")
 
-    // Create BArs
-    if (obj.getMode()){ // Urban data is colored blue
+    // Create Bars
+    if (obj.urbanMode){ // Urban data is colored blue
         console.log("Getting urban")
-
+        ruralLocalData = processData(obj.ruralData, year)
         chart.selectAll('rect')
         .data(valsForBar)
         .enter()
@@ -113,18 +125,22 @@ function createBarChart(data, year) {
         .on("mouseout", function(){
             tooltip.style("display", "none")
          })
-        .on("mousemove", function(d) {
+        .on("mousemove", function(d,i) {
             var xPos = d3.mouse(this)[0] - 100
             var yPos = yScale(d[1])
+            
             tooltip.attr("transform", "translate(" + xPos + ", " + yPos + ")")
-            var tooltipDisplay = "Access to Electricity: " + d[1] + "%"
+            var other = " Rural: " + parseFloat(ruralLocalData[i][1]).toFixed(2) + "%"
+            var tooltipDisplay = "Urban: " + parseFloat(d[1]).toFixed(2) + other
             tooltip.select("text").text(tooltipDisplay)
+
         })
         
         // Change Text
         d3.select("#toggleButton").text("Get Rural")
     } else {
         console.log("Getting Rural data")
+        urbanLocalData = processData(obj.urbanData, year)
         chart.selectAll('rect')
         .data(valsForBar)
         .enter()
@@ -141,11 +157,12 @@ function createBarChart(data, year) {
         .on("mouseout", function(){
             tooltip.style("display", "none")
          })
-        .on("mousemove", function(d) {
+        .on("mousemove", function(d, i) {
             var xPos = d3.mouse(this)[0] - 100
             var yPos = yScale(d[1])
             tooltip.attr("transform", "translate(" + xPos + ", " + yPos + ")")
-            var tooltipDisplay = "Access to Electricity: " + d[1] + "%"
+            var other = " Urban: " + parseFloat(urbanLocalData[i][1]).toFixed(2) + "%"
+            var tooltipDisplay = "Rural: " + parseFloat(d[1]).toFixed(2) + "%" + other
             tooltip.select("text").text(tooltipDisplay)
         })
         // Change Text
@@ -157,15 +174,16 @@ function createBarChart(data, year) {
 
 async function toggleMode() {
     console.log("Clicked, toggling.",)
-    // Get toggled data based off current mode.
-    // If we are on urban mode, grab rural data, else urban
-    var url = obj.getMode()? "https://raw.githubusercontent.com/Hashah1/data-viz-project/master/PercentageAccessRural.csv": "https://raw.githubusercontent.com/Hashah1/data-viz-project/master/PercentageAccessUrban.csv"
-    // Assign the data
-    obj.data = data = await d3.csv(url)
-    // Toggle mode accordingly to match the data
-    obj.toggleMode()
     // Get data based off mode.
-    createBarChart(obj.data, obj.year)
+    if (obj.urbanMode) {
+        obj.toggleMode()
+        createBarChart(obj.ruralData, obj.year)
+    }
+    else {
+        obj.toggleMode()
+        createBarChart(obj.urbanData, obj.year)
+    }
+    
 }
 
 async function handleYear() {
@@ -180,7 +198,14 @@ async function handleYear() {
         console.log("inValid data")
         return
     }
-    createBarChart(obj.data, obj.year)
+    if (obj.urbanMode) {
+
+        createBarChart(obj.urbanData, obj.year)
+    }
+    else {
+
+        createBarChart(obj.ruralData, obj.year)
+    }
 }
 
 function processData(dataset, year='2018') {
